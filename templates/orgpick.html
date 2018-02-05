@@ -1,0 +1,33 @@
+<html>
+<head>
+  <meta charset='utf-8' />
+  <link href="https://fonts.googleapis.com/css?family=Dhurjati" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm">
+  <link rel= "stylesheet" type= "text/css"
+  href= "{{ url_for('static',filename='css/styles.css') }}">
+
+</head>
+<body align='center'>
+  <header>
+    <h1>Strife Inc.</h1>
+  </header>
+  <main>
+    <hr />
+    <nav>
+      <a href='{{url_for('main')}}'>Home</a>
+    </nav>
+    <form method='POST' action='{{url_for('org_stats')}}'>
+      <h2>Choose an Organization</h2>
+      <select name='name'>
+        {% for org in orgs %}
+        <option value='{{org.name}}'>{{org.name}}</option>
+        {% endfor %}
+      </select>
+      <input type='submit' value='Submit' />
+    </form>
+  </main>
+</body>
+</html>

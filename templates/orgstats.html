@@ -1,0 +1,60 @@
+<html>
+<head>
+  <meta charset='utf-8' />
+  <link href="https://fonts.googleapis.com/css?family=Dhurjati" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm">
+  <link rel= "stylesheet" type= "text/css"
+  href= "{{ url_for('static',filename='css/styles.css') }}">
+
+</head>
+  <body>
+    <header>
+      <h1>Strife Inc.</h1>
+    </header>
+    <main>
+      <hr />
+      <nav>
+        <a href="{{url_for('main')}}">Home</a>
+      </nav>
+      <div name='org_box'>
+        <h2>{{org.name}}</h2>
+        <p>{{org.desc}}</p>
+        <div name='operators'>
+          <h3>Operators</h3>
+          <ul>
+            {% for operator in operators %}
+            <li>{{operator.name}}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div name='primary_weapons'>
+          <h3>Primary Weapons</h3>
+          <ul>
+            {% for weapon in p_weapons %}
+            <li>
+              <a href='{{url_for('primary_weapon_stats', weapon_name=weapon.name)}}'>
+              {{weapon.name}}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div name='secondary_weapons'>
+          <h3>Secondary Weapons</h3>
+          <ul>
+            {% for weapon in s_weapons %}
+            <li>
+              <a href='{{url_for('secondary_weapon_stats', weapon_name=weapon.name)}}'>
+              {{weapon.name}}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
