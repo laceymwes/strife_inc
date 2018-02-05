@@ -38,8 +38,9 @@ Responsive design implementation planned for near future.
 
 The SQLAlchemy Object Relational Mapper was used to create the SQLite database for this application. 
 
-Database tables can be viewed [here](githubtablelink).
-The scripts used to define tablepopulate the database can be viewed [here](link).
+Database tables can be viewed [here](https://github.com/laceymwes/strife_inc/blob/master/Modeling/tables.png).
+
+The scripts used to set up and populate the database can be viewed [here](https://github.com/laceymwes/strife_inc/blob/master/database_setup.py) and [here](https://github.com/laceymwes/strife_inc/blob/master/create_database.py) respectively.
 
 ## Release History
 ---

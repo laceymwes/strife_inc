@@ -3,7 +3,7 @@
 
 Strife Inc. is named after the unofficial Rainbow Six: Siege team, "Strife Inc.". This is a data-driven web application, meant to display Strife Inc. team stats, as well as information about Organizations, Operators, and Weapons found in Rainbow Six: Siege.  
 
-The application can be found at [Strife Inc](heroku)
+The application can be found at [Strife Inc](https://strifeinc.herokuapp.com)
 
 ## Site
 ---
@@ -38,8 +38,9 @@ Responsive design implementation planned for near future.
 
 The SQLAlchemy Object Relational Mapper was used to create the SQLite database for this application. 
 
-Database tables can be viewed [here](githubtablelink).
-The scripts used to set up and populate the database can be viewed [here](link) and [here]() respectively.
+Database tables can be viewed [here](https://github.com/laceymwes/strife_inc/blob/master/Modeling/tables.png).
+
+The scripts used to set up and populate the database can be viewed [here](https://github.com/laceymwes/strife_inc/blob/master/database_setup.py) and [here](https://github.com/laceymwes/strife_inc/blob/master/create_database.py) respectively.
 
 ## Release History
 ---
