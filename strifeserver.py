@@ -2,6 +2,7 @@ from flask import Flask, render_template, flash, url_for, redirect, request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, PrimeWeapon, SecWeapon, Org, Operator
+import os
 
 engine = create_engine('sqlite:///r6db.db')
 Base.metadata.bind = engine
@@ -44,5 +45,5 @@ def secondary_weapon_stats(weapon_name):
 
 
 if __name__ == '__main__':
-
-    strife.run(host='0.0.0.0', port=8000)
+    port = int(os.environ.get('PORT', 8000))
+    strife.run(host='0.0.0.0', port=port)
