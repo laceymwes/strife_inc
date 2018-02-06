@@ -36,7 +36,7 @@ def org_stats():
         # SELECT * FROM operator WHERE org_name = org.name;
         operators = session.query(Operator).filter_by(org_name=org.name).all()
         # SELECT * FROM prime_weapon WHERE org_name = org.name;
-        p_weapons = session.query(PrimeWeapon).filter_by(org_nam=org.name).all()
+        p_weapons = session.query(PrimeWeapon).filter_by(org_name=org.name).all()
         # SELECT * FROM sec_weapon WHERE org_name = org.name;
         s_weapons = session.query(SecWeapon).filter_by(org_name=org.name).all()
         return render_template("orgstats.html", org=org, operators=operators,
