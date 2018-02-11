@@ -75,7 +75,7 @@ def oauth2callback():
     flow_object = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS, scopes=SCOPES, state=state)
 
-    flow_object.redirect_uir = url_for('oauth2callback', _external=True)
+    flow_object.redirect_uir = 'https://strifeinc.herokuapp.com/oauth2callback'
 
     # get auth server response with request.url
     # store response
