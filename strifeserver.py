@@ -49,7 +49,7 @@ def login():
     # must match callback designated in developer console
     # oauth2callback method will handle google auth server response
     # google auth server response will be determined by resource owner
-    flow_object.redirect_uri = url_for('oauth2callback', _external=True)
+    flow_object.redirect_uri = 'https://strifeinc.herokuapp.com/oauth2callback'
 
 
     authorization_url, state = flow_object.authorization_url(
@@ -181,12 +181,7 @@ def secondary_weapon_stats(weapon_name):
 #     session.add(new_user)
 #     session.commit()
 #     return new_user.id
-@strife.before_request
-def before_request():
-    if request.url.startswith('http://'):
-        url = request.url.replace('http://', 'https://', 1)
-        code = 301
-        return redirect(url, code=code)
+
 
 # return whole user entry
 def getUserInfo(user_id):
