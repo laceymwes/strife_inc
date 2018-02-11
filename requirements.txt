@@ -1,6 +1,6 @@
 sqlalchemy>=1.2.2
 flask>=0.12.2
 requests>=2.18.4
-google.oauth2>=0.0.0
-google_auth_oauthlib>=0.0.0
+google.oauth2>=0
+google_auth_oauthlib>=0
 
