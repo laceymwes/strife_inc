@@ -91,7 +91,7 @@ def oauth2callback():
     login_session['credentials'] = credentials_to_dict(credentials)
 
     # request profile information of resource owner
-    request = requests.get('http://www.googleapis.com/auth/plus.me')
+    request = requests.get('https://www.googleapis.com/auth/plus.me')
     data = request.jsonify()
     # response format reference:
     # https://developers.google.com/+/web/api/rest/latest/people/get#response
