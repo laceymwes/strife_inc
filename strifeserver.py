@@ -49,7 +49,8 @@ def login():
     # must match callback designated in developer console
     # oauth2callback method will handle google auth server response
     # google auth server response will be determined by resource owner
-    flow_object.redirect_uri = 'https://strifeinc.herokuapp.com/oauth2callback'
+    flow_object.redirect_uri = url_for('oauth2callback', _external=True,
+        scheme='https')
 
 
     authorization_url, state = flow_object.authorization_url(
@@ -75,7 +76,8 @@ def oauth2callback():
     flow_object = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS, scopes=SCOPES, state=state)
 
-    flow_object.redirect_uir = 'https://strifeinc.herokuapp.com/oauth2callback'
+    flow_object.redirect_uir = url_for('oauth2callback', _external=True,
+        scheme='https')
 
     # get auth server response with request.url
     # store response
@@ -181,6 +183,7 @@ def secondary_weapon_stats(weapon_name):
 #     session.add(new_user)
 #     session.commit()
 #     return new_user.id
+
 
 
 # return whole user entry
