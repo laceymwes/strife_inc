@@ -203,4 +203,4 @@ def getUserID(email):
 if __name__ == '__main__':
     strife.secret_key = str(uuid.uuid4())
     port = int(os.environ.get('PORT', 5000))
-    strife.run(host='0.0.0.0', port=port)
+    strife.run(host='0.0.0.0', port=port, ssl_context='adhoc')
