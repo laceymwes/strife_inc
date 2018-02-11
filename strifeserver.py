@@ -181,7 +181,12 @@ def secondary_weapon_stats(weapon_name):
 #     session.add(new_user)
 #     session.commit()
 #     return new_user.id
-
+@strife.before_request
+def before_request():
+    if request.url.startswith('http://'):
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
 
 # return whole user entry
 def getUserInfo(user_id):
