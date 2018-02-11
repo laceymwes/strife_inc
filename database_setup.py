@@ -5,6 +5,13 @@ from sqlalchemy.orm import relationship # to define related tables
 
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = 'user'
+    name = Column(String(30))
+    email = Column(String(30))
+    id = Column(String(50), primary_key = True)
+
+
 class Org(Base): # extend and inherit from declarative_base
     __tablename__ = 'org'
     name = Column( # org_name

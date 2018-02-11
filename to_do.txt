@@ -1,0 +1,20 @@
+- add player, match, and round tables
+	- I want to add a table for each player on our team. I don't want to expose
+	Uplay gamer tags, so maybe just use first names.
+	- I figure we can use a UUID primary key field for each match and round entry.
+	- Since there's only going to be Five players in the player table, we can just 
+	use Integer type field for player IDs. SQLite auto increments this field type
+	if it isnt explicity assigned a value.
+- add API for orgs, operators, weapons, and players
+	- This is pretty easy and straight forward. Just add properties to the 
+	table/class definitions and a route def in the python code to return a JSON
+	object.
+- add login with google OAuth V2 for Chris and Mike
+	- got to create a profile in the google developer's console to get a client ID	
+	and secret.
+- remove versioning from README. replace with major update dates.
+	- After doing some research on versioning and web applications, I've decided
+	versioning isnt necessary in this particular instance. We'll just update this 
+	section of the README with major changes and the date the changes were pushed.
+- stlye
+	- Black Beard leading the way!

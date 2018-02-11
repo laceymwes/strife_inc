@@ -1,0 +1,35 @@
+<html>
+<head>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href="https://fonts.googleapis.com/css?family=Dhurjati" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm">
+  <link rel= "stylesheet" type= "text/css"
+  href= "{{ url_for('static',filename='css/styles.css') }}">
+
+</head>
+<body align='center'>
+  <header>
+      <h1>Strife Inc.</h1>
+  </header>
+  <hr />
+  <main>
+    <a href="{{url_for('org_stats')}}">Organizations</a>
+    <a id='login' href='{{url_for('login')}}'>Log In</a>
+    <a id='logout' href='{{url_for('logout')}}'>Log Out</a>
+    <figure id='userinfo'>
+      <img src="{{imageUrl}}" />
+      <figcaption>{{userName}}</figcaption>
+    </figure>
+
+      <article>
+        Welcome to the Strife Inc. website! This is the official site of
+        unofficial Rainbow Six: Siege team, "Strife Inc.".
+      </article>
+  </main>
+</body>
+</html>
