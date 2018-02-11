@@ -50,7 +50,7 @@ def login():
     # oauth2callback method will handle google auth server response
     # google auth server response will be determined by resource owner
     flow_object.redirect_uri = url_for('oauth2callback', _external=True,
-        scheme='https')
+        _scheme='https')
 
 
     authorization_url, state = flow_object.authorization_url(
@@ -77,7 +77,7 @@ def oauth2callback():
         CLIENT_SECRETS, scopes=SCOPES, state=state)
 
     flow_object.redirect_uir = url_for('oauth2callback', _external=True,
-        scheme='https')
+        _scheme='https')
 
     # get auth server response with request.url
     # store response
