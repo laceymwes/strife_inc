@@ -9,6 +9,7 @@ import os
 import requests
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
+import googleapiclient.discovery
 import json
 import uuid
 
@@ -24,8 +25,14 @@ strife = Flask(__name__)
 
 # Load CLIENT_ID from Google client secrets JSON file
 CLIENT_SECRETS = 'client_secrets.json'
-SCOPES = ['profile']
+SCOPES = ['https://www.googleapis.com/auth/plus.login']
 
+
+
+# All API services, names, and versions can be found at:
+# https://developers.google.com/apis-explorer/#p/
+API_SERVICE_NAME = 'plus'
+API_VERSION = 'v1'
 
 # serve homepage
 @strife.route("/")
@@ -76,7 +83,7 @@ def oauth2callback():
     flow_object = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS, scopes=SCOPES, state=state)
 
-    flow_object.redirect_uir = url_for('oauth2callback', _external=True,
+    flow_object.redirect_uri = url_for('oauth2callback', _external=True,
         _scheme='https')
 
     # get auth server response with request.url
@@ -90,14 +97,30 @@ def oauth2callback():
     # store credentials in cookies dictionary
     login_session['credentials'] = credentials_to_dict(credentials)
 
-    # request profile information of resource owner
-    request = requests.get('https://www.googleapis.com/auth/plus.me')
-    data = request.jsonify()
+    plusClient = googleapiclient.discovery.build(
+        API_SERVICE_NAME,
+        API_VERSION,
+        credentials=credentials
+    )
+
+
+    token = login_session['credentials']['token']
+    print(token)
+    print('Printing Token')
+
+    request = plusClient.people().get(userId='me')
+    response = request.execute()
+    print(response)
+
+    help(plusClient)
+
+
+    return redirect(url_for('index'))
+
     # response format reference:
     # https://developers.google.com/+/web/api/rest/latest/people/get#response
-    login_session['displayName'] = data['displayName']
-    login_session['image_url'] = data['image']['url']
-    return redirect(url_for('index'))
+
+    # login_session['image_url'] = data['image']['url']
 
 def credentials_to_dict(credentials):
     return {'token': credentials.token,
