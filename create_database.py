@@ -10,19 +10,6 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
 
-# Users
-christopher_fields = User(name = "Christopher Fields",
-                  email = 'christopher.m.fields89@gmail.com',
-                  id = str(uuid.uuid4()))
-session.add(christopher_fields)
-session.commit()
-
-michael_lacey = User(name = "Michael Lacey",
-                    email = 'laceymwes@gmail.com',
-                    id = str(uuid.uuid4()))
-
-session.add(michael_lacey)
-session.commit()
 
 # S.A.T. organization
 sat = Org(name = 'S.A.T', desc = '''Special Assault Team. Japanese

@@ -7,8 +7,8 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, PrimeWeapon, SecWeapon, Org, Operator, User
 import os
 import requests
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
+from google.oauth2 import id_token
+from google.auth.transport import requests as grequests
 import googleapiclient.discovery
 import json
 import uuid
@@ -23,28 +23,44 @@ session = DBSession()
 
 strife = Flask(__name__)
 
-# Load CLIENT_ID from Google client secrets JSON file
-CLIENT_SECRETS = 'client_secrets.json'
-SCOPES = ['https://www.googleapis.com/auth/plus.login']
+# Load CLIENT_ID from Google credentials JSON file
+SIGN_IN_CLIENT = json.loads(open('signin_client.json', 'r').read())['web']['client_id']
+OAUTH_CLIENT = json.loads(open('oauth_clienT.json', 'r').read())['web']['client_id']
+
+@strife.route('/tokensignin/', methods=['POST', 'GET'])
+def tokensignin():
+    token = request.args.get('idtoken')
+    print(token)
+    try:
+        idinfo = id_token.verify_oauth2_token(token, grequests.Request(), OAUTH_CLIENT)
+        userId = idInfo['sub']
+    except ValueError:
+        response = make_response('Invalid token', 401)
+        response.headers['Content-type'] = 'text/html'
+        return response
+    user_request = requests.get('''
+        https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s''' % token)
+    if user_request.status_code == '200':
+        print('\nrequest response 200 \n')
+        data = request.json()
+    else:
+        response = make_response('Invalid token', 401)
+        response.headers['Content-type'] = 'text/html'
+        return response
+    # if user is an authorized admin, store cookie information
+    if checkAuth(data['email']):
+        createSession(data)
+    return redirect(url_for('index'))
 
 
-
-# All API services, names, and versions can be found at:
-# https://developers.google.com/apis-explorer/#p/
-API_SERVICE_NAME = 'plus'
-API_VERSION = 'v1'
 
 # serve homepage
 @strife.route("/")
 def index():
-    # test for state
-    if login_session.get('state') is None:
-        return render_template("index.html")
+    if login_session.get('user_id') is not None:
+        return render_template('index.html', SIGN_IN_CLIENT=SIGN_IN_CLIENT, name=login_session['name'])
     else:
-        # pass user info from cookies dictionary
-        userName = login_session.get('displayName')
-        imageUrl = login_session.get('image_url')
-        return render_template('index.html', userName=userName, imageUrl=imageUrl)
+        return render_template('index.html', SIGN_IN_CLIENT=SIGN_IN_CLIENT)
 
 @strife.route('/login')
 def login():
@@ -73,82 +89,6 @@ def login():
     # authorization_url sends request to google auth server
     # redirect_uri defined above 'oauth2callback'
     return redirect(authorization_url)
-
-@strife.route('/oauth2callback')
-def oauth2callback():
-    # pull cookie state value down to local state variable
-    state = login_session['state']
-
-    # instantiate local flow_object again with same state as original request
-    flow_object = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS, scopes=SCOPES, state=state)
-
-    flow_object.redirect_uri = url_for('oauth2callback', _external=True,
-        _scheme='https')
-
-    # get auth server response with request.url
-    # store response
-    authorization_response = flask.request.url
-    # parse response and extract refresh and access tokens
-    flow_object.fetch_token(authorization_response=authorization_response)
-
-    # store credentials parse from response in local variable
-    credentials = flow_object.credentials
-    # store credentials in cookies dictionary
-    login_session['credentials'] = credentials_to_dict(credentials)
-
-    plusClient = googleapiclient.discovery.build(
-        API_SERVICE_NAME,
-        API_VERSION,
-        credentials=credentials
-    )
-
-
-    token = login_session['credentials']['token']
-    print(token)
-    print('Printing Token')
-
-    request = plusClient.people().get(userId='me')
-    response = request.execute()
-    print(response)
-
-    help(plusClient)
-
-
-    return redirect(url_for('index'))
-
-    # response format reference:
-    # https://developers.google.com/+/web/api/rest/latest/people/get#response
-
-    # login_session['image_url'] = data['image']['url']
-
-def credentials_to_dict(credentials):
-    return {'token': credentials.token,
-          'refresh_token': credentials.refresh_token,
-          'token_uri': credentials.token_uri,
-          'client_id': credentials.client_id,
-          'client_secret': credentials.client_secret,
-          'scopes': credentials.scopes}
-
-@strife.route('/logout')
-def logout():
-    # test if session is establish already
-    if 'credentials' not in login_session:
-        return redirect(url_for('index'))
-
-    credentials = google.oauth2.credentials.Credentials(
-    **flask.session['credentials'])
-
-    revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
-      params={'token': credentials.token},
-      headers = {'content-type': 'application/x-www-form-urlencoded'})
-
-    status_code = getattr(revoke, 'status_code')
-    if status_code == 200:
-        clear_credentials()
-        return redirect(url_for('index'))
-    else:
-        return('An error occurred.' + print_index_table())
 
 
 def clear_credentials():
@@ -207,23 +147,30 @@ def secondary_weapon_stats(weapon_name):
 #     session.commit()
 #     return new_user.id
 
-
-
-# return whole user entry
-def getUserInfo(user_id):
-    user = session.query(User).filter_by(id = user_id)
-    return user
-
-# attempt to find user entry in user table
-def getUserID(email):
+def checkAuth(email):
     try:
-        user = session.query(User).filter_by(email = email).one()
-        return user.id
+        authEmail = session.query(Administrator).filter_by(email = email).first()
+        return True
     except:
-        return None
+        return False
+
+def createSession(data):
+    try:
+        user = session.query(User).filter_by(id = data['sub'])
+        login_session['user_id'] = user.id
+        login_session['name'] = user.name
+        return
+    except:
+        newUser = User(name = data['name'], email = data['email'],
+                      image_url = data['picture'], id = data['sub'])
+        session.add(newUser)
+        session.commit()
+        login_session['user_id'] = data['sub']
+        login_session['name'] = data['name']
+        return
 
 # __name__ attribute is assign '__main__' when .py ran first
 if __name__ == '__main__':
     strife.secret_key = str(uuid.uuid4())
     port = int(os.environ.get('PORT', 5000))
-    strife.run(host='0.0.0.0', port=port, ssl_context='adhoc')
+    strife.run(host='0.0.0.0', port=port)

@@ -5,10 +5,18 @@ from sqlalchemy.orm import relationship # to define related tables
 
 Base = declarative_base()
 
+class Administrator(Base):
+    __tablename__ = 'administrator'
+    email = Column(
+    String(50), primary_key = True)
+
+
+
 class User(Base):
     __tablename__ = 'user'
-    name = Column(String(30))
-    email = Column(String(30))
+    name = Column(String(50))
+    email = Column(String(50), ForeignKey('administrator.email'))
+    image_url = Column(String(70))
     id = Column(String(50), primary_key = True)
 
 
