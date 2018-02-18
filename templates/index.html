@@ -2,7 +2,7 @@
 <head>
   <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="google-signin-client_id" content="{{SIGN_IN_CLIENT}}">
+    <meta name="google-signin-client_id" content="{{CLIENT_ID}}">
   <link href="https://fonts.googleapis.com/css?family=Dhurjati" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
   <link rel="stylesheet"
@@ -28,7 +28,7 @@
         var profile = googleUser.getBasicProfile();
           var id_token = googleUser.getAuthResponse().id_token;
           var xhr = new XMLHttpRequest();
-          xhr.open('POST', 'http://localhost:5000/tokensignin');
+          xhr.open('POST', '/tokensignin');
           xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
           xhr.onload = function() {
               console.log('Signed in as: ' + xhr.responseText);

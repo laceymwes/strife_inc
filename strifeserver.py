@@ -24,15 +24,15 @@ session = DBSession()
 strife = Flask(__name__)
 
 # Load CLIENT_ID from Google credentials JSON file
-SIGN_IN_CLIENT = json.loads(open('signin_client.json', 'r').read())['web']['client_id']
-OAUTH_CLIENT = json.loads(open('oauth_clienT.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(open('signin_client.json', 'r').read())['web']['client_id']
+
 
 @strife.route('/tokensignin/', methods=['POST', 'GET'])
 def tokensignin():
-    token = request.args.get('idtoken')
+    token = request.form.get('idtoken')
     print(token)
     try:
-        idinfo = id_token.verify_oauth2_token(token, grequests.Request(), OAUTH_CLIENT)
+        idinfo = id_token.verify_oauth2_token(token, grequests.Request(), CLIENT_ID)
         userId = idInfo['sub']
     except ValueError:
         response = make_response('Invalid token', 401)
@@ -40,6 +40,8 @@ def tokensignin():
         return response
     user_request = requests.get('''
         https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s''' % token)
+    print('printing user_request.status_code\n')
+    print(user_request.status_code)
     if user_request.status_code == '200':
         print('\nrequest response 200 \n')
         data = request.json()
@@ -58,9 +60,9 @@ def tokensignin():
 @strife.route("/")
 def index():
     if login_session.get('user_id') is not None:
-        return render_template('index.html', SIGN_IN_CLIENT=SIGN_IN_CLIENT, name=login_session['name'])
+        return render_template('index.html', CLIENT_ID=CLIENT_ID, name=login_session['name'])
     else:
-        return render_template('index.html', SIGN_IN_CLIENT=SIGN_IN_CLIENT)
+        return render_template('index.html', CLIENT_ID=CLIENT_ID)
 
 @strife.route('/login')
 def login():
