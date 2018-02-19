@@ -19,6 +19,8 @@ class User(Base):
     image_url = Column(String(70))
     id = Column(String(50), primary_key = True)
 
+    admin = relationship(Administrator)
+
 
 class Org(Base): # extend and inherit from declarative_base
     __tablename__ = 'org'

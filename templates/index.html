@@ -42,6 +42,10 @@
         auth2.signOut().then(function () {
           console.log('User signed out.');
         });
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/tokensignout')
+        xhr.setRequestHeader('Content-type', 'text/html')
+        xhr.send()
       }
     </script>
       <article>

@@ -4,7 +4,8 @@ from flask import request
 import flask
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, PrimeWeapon, SecWeapon, Org, Operator, User
+from database_setup import Base, PrimeWeapon, SecWeapon, Org, Operator
+from database_setup import Administrator, User
 import os
 import requests
 from google.oauth2 import id_token
@@ -27,12 +28,21 @@ strife = Flask(__name__)
 CLIENT_ID = json.loads(open('signin_client.json', 'r').read())['web']['client_id']
 
 
-@strife.route('/tokensignin/', methods=['POST', 'GET'])
+# serve homepage
+@strife.route("/")
+def index():
+    # if user is logged in, pas user name to template
+    if login_session.get('user_id'):
+        return render_template('index.html', CLIENT_ID=CLIENT_ID, name=login_session['name'])
+    else:
+        return render_template('index.html', CLIENT_ID=CLIENT_ID)
+
+
+@strife.route('/tokensignin', methods=['POST'])
 def tokensignin():
     token = request.form.get('idtoken')
-    print(token)
     try:
-        idinfo = id_token.verify_oauth2_token(token, grequests.Request(), CLIENT_ID)
+        idInfo = id_token.verify_oauth2_token(token, grequests.Request(), CLIENT_ID)
         userId = idInfo['sub']
     except ValueError:
         response = make_response('Invalid token', 401)
@@ -40,64 +50,37 @@ def tokensignin():
         return response
     user_request = requests.get('''
         https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s''' % token)
-    print('printing user_request.status_code\n')
-    print(user_request.status_code)
-    if user_request.status_code == '200':
-        print('\nrequest response 200 \n')
-        data = request.json()
+    if user_request.status_code == 200:
+        data = user_request.json()
     else:
         response = make_response('Invalid token', 401)
         response.headers['Content-type'] = 'text/html'
         return response
-    # if user is an authorized admin, store cookie information
-    if checkAuth(data['email']):
+    # check if user is admin
+    if checkAuth(data['email']) == True:
+        print(data['email'])
         createSession(data)
+    else:
+        response = make_response('Unauthorized user', 401)
+        response.headers['Content-typ'] = 'text/html'
+        return response
     return redirect(url_for('index'))
 
-
-
-# serve homepage
-@strife.route("/")
-def index():
+@strife.route('/tokensignout', methods=['POST'])
+def tokensignout():
     if login_session.get('user_id') is not None:
-        return render_template('index.html', CLIENT_ID=CLIENT_ID, name=login_session['name'])
+        clear_credentials()
+        return redirect(url_for('index'))
     else:
-        return render_template('index.html', CLIENT_ID=CLIENT_ID)
-
-@strife.route('/login')
-def login():
-    # replaces deprecated oauth2client lib flow object
-    flow_object = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS,
-        scopes=SCOPES
-    )
-    # must match callback designated in developer console
-    # oauth2callback method will handle google auth server response
-    # google auth server response will be determined by resource owner
-    flow_object.redirect_uri = url_for('oauth2callback', _external=True,
-        _scheme='https')
-
-
-    authorization_url, state = flow_object.authorization_url(
-        # use refresh token with out redundant user permission request
-        access_type='offline',
-        # incremental authorization
-        include_granted_scopes='true'
-    )
-
-    # store state variable that was just defined ^^^ in cookies dictionary
-    login_session['state'] = state
-
-    # authorization_url sends request to google auth server
-    # redirect_uri defined above 'oauth2callback'
-    return redirect(authorization_url)
+        response = make_response('User not admin or not logged in', 401)
+        response.headers['Content-type'] = 'text/html'
+        return response
 
 
 def clear_credentials():
-    if 'credentials' in login_session:
-        del login_session['credentials']
-        del login_session['displayName']
-        del login_session['image_url']
+    print('clearing credentials')
+    del login_session['user_id']
+    del login_session['name']
     return
 
 
@@ -149,22 +132,29 @@ def secondary_weapon_stats(weapon_name):
 #     session.commit()
 #     return new_user.id
 
+# Check administrator table for
 def checkAuth(email):
     try:
+        email = str(email)
         authEmail = session.query(Administrator).filter_by(email = email).first()
-        return True
+        # query returns None if email is not in admin table
+        if authEmail is not None:
+            return True
+        else:
+            return False
     except:
         return False
 
 def createSession(data):
     try:
-        user = session.query(User).filter_by(id = data['sub'])
+        user = session.query(User).filter_by(id = data['sub']).first()
         login_session['user_id'] = user.id
         login_session['name'] = user.name
         return
     except:
+        admin_email = session.query(Administrator).filter_by(email = data['email']).first()
         newUser = User(name = data['name'], email = data['email'],
-                      image_url = data['picture'], id = data['sub'])
+                      image_url = data['picture'], id = data['sub'], admin = admin_email)
         session.add(newUser)
         session.commit()
         login_session['user_id'] = data['sub']
