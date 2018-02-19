@@ -1,0 +1,27 @@
+<html>
+<head>
+</head>
+<body>
+  <header>
+  </header>
+  <main>
+  <form method='POST' action='{{url_for('newOperator', org_name=org.name)}}'>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+        {% for message in messages %}
+        <li>{{message}}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% endwith %}
+    <h3>New Operator</h3>
+    <br />
+    <h4>{{org.name}}</h4>
+    </select>
+    <input type='text' name='op_name'>
+    <input type='submit' value='Add Operator'>
+  </form>
+  <main>
+</body>
+<html>

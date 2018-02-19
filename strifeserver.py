@@ -1,6 +1,6 @@
 from flask import Flask, render_template, flash, url_for, redirect
 from flask import jsonify, make_response, session as login_session
-from flask import request
+from flask import request, flash
 import flask
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -57,7 +57,7 @@ def tokensignin():
         response.headers['Content-type'] = 'text/html'
         return response
     # check if user is admin
-    if checkAuth(data['email']) == True:
+    if checkAuth(data['email']) is True:
         print(data['email'])
         createSession(data)
     else:
@@ -65,6 +65,7 @@ def tokensignin():
         response.headers['Content-typ'] = 'text/html'
         return response
     return redirect(url_for('index'))
+
 
 @strife.route('/tokensignout', methods=['POST'])
 def tokensignout():
@@ -118,48 +119,75 @@ def secondary_weapon_stats(weapon_name):
     weapon = session.query(SecWeapon).filter_by(name=weapon_name).one()
     return render_template('weapon.html', weapon=weapon)
 
-# @strif.route("/<str:weapon_name>/")
-# def weapon_stats(weapon_name):
+# handle both form retrieval and submission for new operators
+@strife.route('/newoperator/<string:org_name>/', methods=['POST', 'GET'])
+def newOperator(org_name):
+    if login_session.get('user_id') is None:
+        return render_template('unauthorized.html')
+    if request.method == 'GET':
+        try:
+            # SELECT * FROM org WHERE name = org_name;
+            org = session.query(Org).filter_by(name=org_name).first()
+            return render_template('newoperator.html', org=org)
+        except SQLAlchemyError:
+            response = make_response('Unable to update database', 500)
+            response.headers['Content-type'] = 'text/html'
+            return response
+    if request.method == 'POST':
+        if  request.form.get('op_name') == '':
+            # flash message for incomplete form
+            flash('Please complete the entire form and try again.')
+            return redirect(url_for('newOperator', org_name=org_name))
+        else:
+            # SELECT * FROM org WHERE name = org_name;
+            org = session.query(Org).filter_by(name=org_name).first()
+            opName = request.form.get('op_name')
+            newOperator = Operator(name=opName, org_name=org_name,
+                                   affiliation=org)
+            # INSERT INTO opertator VALUES (newOperator);
+            session.add(newOperator)
+            session.commit()
+            # flash successful operator Add
+            flash('Operator successfully added to the database!')
+            return redirect(url_for('newOperator', org_name=org_name))
 
-# create new user entry, accessible only by admin
-# def createUser(login_session):
-#     user_id = str(uuid.uuid4())
-#     new_user = User(name = login_session['username'],
-#                     email = login_session['email'],
-#                     picture = login_session['picture'],
-#                     id = user_id)
-#     session.add(new_user)
-#     session.commit()
-#     return new_user.id
 
-# Check administrator table for
+# Check administrator table for user's email
 def checkAuth(email):
     try:
         email = str(email)
-        authEmail = session.query(Administrator).filter_by(email = email).first()
+        # SELECT * FROM administrator WHERE email = email;
+        authEmail = session.query(Administrator).filter_by(email=email).first()
         # query returns None if email is not in admin table
         if authEmail is not None:
             return True
         else:
             return False
-    except:
+    except SQLAlchemyError:
         return False
 
+
+# check if user entry already exists, assign user info to cookies if positive
 def createSession(data):
     try:
-        user = session.query(User).filter_by(id = data['sub']).first()
+        # SELECT * FROM user WHERE id = data['sub'];
+        user = session.query(User).filter_by(id=data['sub']).first()
         login_session['user_id'] = user.id
         login_session['name'] = user.name
         return
-    except:
-        admin_email = session.query(Administrator).filter_by(email = data['email']).first()
-        newUser = User(name = data['name'], email = data['email'],
-                      image_url = data['picture'], id = data['sub'], admin = admin_email)
+    # create new user entry
+    except SQLAlchemyError:
+        # SELECT * FROM administrator WHERE email = data['email'];
+        admin_email = session.query(Administrator).filter_by(email=data['email']).first()
+        newUser = User(name = data['name'], email=data['email'],
+                      image_url=data['picture'], id=data['sub'], admin=admin_email)
+        # INSERT INTO user VALUES (newUser);
         session.add(newUser)
         session.commit()
         login_session['user_id'] = data['sub']
         login_session['name'] = data['name']
         return
+
 
 # __name__ attribute is assign '__main__' when .py ran first
 if __name__ == '__main__':

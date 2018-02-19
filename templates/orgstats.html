@@ -17,13 +17,14 @@
     <main>
       <hr />
       <nav>
-        <a href="{{url_for('main')}}">Home</a>
+        <a href="{{url_for('index')}}">Home</a>
       </nav>
       <div name='org_box'>
         <h2>{{org.name}}</h2>
         <p>{{org.desc}}</p>
         <div name='operators'>
           <h3>Operators</h3>
+          <a href='{{url_for('newOperator', org_name=org.name)}}'>New Operator</a>
           <ul>
             {% for operator in operators %}
             <li>{{operator.name}}</li>

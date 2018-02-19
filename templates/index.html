@@ -15,13 +15,15 @@
 </head>
 <body align='center'>
   <header>
-      <h1>Strife Inc.</h1>
+    <div align='right'>
+      <div align='right' class="g-signin2" data-onsuccess="onSignIn"></div>
+      <a align='right' href="#" onclick="signOut();">Sign out</a>
+    </div>  
+    <h1>Strife Inc.</h1>
+    <a href="{{url_for('org_stats')}}">Organizations</a>
   </header>
   <hr />
   <main>
-    <a href="{{url_for('org_stats')}}">Organizations</a>
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    <a href="#" onclick="signOut();">Sign out</a>
     <h2>{{name}}</h2>
     <script>
       function onSignIn(googleUser) {
