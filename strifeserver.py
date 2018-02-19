@@ -128,7 +128,7 @@ def newOperator(org_name):
             # SELECT * FROM org WHERE name = org_name;
             org = session.query(Org).filter_by(name=org_name).first()
             return render_template('newoperator.html', org=org)
-        except SQLAlchemyError:
+        except:
             response = make_response('Unable to update database', 500)
             response.headers['Content-type'] = 'text/html'
             return response
@@ -162,7 +162,7 @@ def checkAuth(email):
             return True
         else:
             return False
-    except SQLAlchemyError:
+    except:
         return False
 
 
@@ -175,7 +175,7 @@ def createSession(data):
         login_session['name'] = user.name
         return
     # create new user entry
-    except SQLAlchemyError:
+    except:
         # SELECT * FROM administrator WHERE email = data['email'];
         admin_email = session.query(Administrator).filter_by(email=data['email']).first()
         newUser = User(name = data['name'], email=data['email'],
