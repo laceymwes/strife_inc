@@ -1,6 +1,6 @@
 # Strife Inc.
-----
 ---
+
 
 Strife Inc. is named after the unofficial Rainbow Six: Siege team, "Strife Inc.". This is a data-driven web application, meant to display Strife Inc. team stats, as well as information about Organizations, Operators, and Weapons found in Rainbow Six: Siege.  
 
@@ -38,7 +38,7 @@ Flash message is displayed for successful or unsuccessful database updates after
 
 
 ### Weapon
----
+
 
 ![](images/screenshots/weapon.png)
 
@@ -46,13 +46,13 @@ Here users can view weapon caliber and damage statistics.
 
 
 ## Mobile Support
----
+
 
 Responsive design implementation planned for near future.
 
 
 ## Data
----
+
 
 The SQLAlchemy Object Relational Mapper was used to create the SQLite database for this application. 
 
@@ -61,13 +61,14 @@ Database tables can be viewed [here](https://github.com/laceymwes/strife_inc/blo
 The scripts used to set up and populate the database can be viewed [here](https://github.com/laceymwes/strife_inc/blob/master/database_setup.py) and [here](https://github.com/laceymwes/strife_inc/blob/master/create_database.py) respectively.
 
 ## Release History
----
+
 
 * Feb 5, 2018 - initial release
 * Feb 19, 2018 - Administrators can now sign in with Google account via sign-in and OAuth. Administrators can add new operators.
 
+
 ## Built with
----
+
 
 * [SQLAlchemy](https://www.sqlalchemy.org/)
 * [Flask](http://flask.pocoo.org/docs/0.12/)
@@ -76,7 +77,7 @@ The scripts used to set up and populate the database can be viewed [here](https:
 * [Google API](https://developers.google.com/api-client-library/)
 
 ## What's next?
----
+
 
 Following is a list of application functionality to be added in the near future:
 
@@ -93,7 +94,7 @@ Following is a list of application functionality to be added in the near future:
 	- In the process of creating silhouettes for each weapon to be displayed along with weapon statistics. 
  
 ## Team
----
+
 
 [Michael Lacey](https://github.com/laceymwes)
 
