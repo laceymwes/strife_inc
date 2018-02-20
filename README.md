@@ -1,5 +1,5 @@
 # Strife Inc.
----
+
 
 
 Strife Inc. is named after the unofficial Rainbow Six: Siege team, "Strife Inc.". This is a data-driven web application, meant to display Strife Inc. team stats, as well as information about Organizations, Operators, and Weapons found in Rainbow Six: Siege.  
@@ -7,10 +7,10 @@ Strife Inc. is named after the unofficial Rainbow Six: Siege team, "Strife Inc."
 The application can be found at [Strife Inc](https://strifeinc.herokuapp.com)
 
 ## Site
----
+
 
 ### Org Selection
----
+
 
 ![](images/screenshots/orgs.png)
 
