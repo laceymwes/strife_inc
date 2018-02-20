@@ -178,8 +178,9 @@ def createSession(data):
     except:
         # SELECT * FROM administrator WHERE email = data['email'];
         admin_email = session.query(Administrator).filter_by(email=data['email']).first()
-        newUser = User(name = data['name'], email=data['email'],
-                      image_url=data['picture'], id=data['sub'], admin=admin_email)
+        # email field is populated with administrator email field value
+        newUser = User(name = data['name'], image_url=data['picture'],
+                      id=data['sub'], admin=admin_email)
         # INSERT INTO user VALUES (newUser);
         session.add(newUser)
         session.commit()
