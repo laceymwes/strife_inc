@@ -27,6 +27,14 @@ strife = Flask(__name__)
 CLIENT_ID = json.loads(open('signin_client.json', 'r').read())['web']['client_id']
 
 
+# use to control access 
+ADMIN_USERS = []
+admins = session.query(User).all()
+for admin in admins:
+    ADMIN_USERS.append(admin)
+    print(ADMIN_USERS)
+
+
 # serve homepage
 @strife.route("/")
 def index():
@@ -82,7 +90,6 @@ def clear_credentials():
     print('clearing credentials')
     del login_session['user_id']
     del login_session['name']
-    del login_session['state']
     return
 
 
