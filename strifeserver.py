@@ -31,10 +31,10 @@ CLIENT_ID = json.loads(open('signin_client.json', 'r').read())['web']['client_id
 @strife.route("/")
 def index():
     # if user is logged in, pas user name to template
-    login_session['state'] = str(uuid.uuid4())
     if login_session.get('user_id'):
         return render_template('index.html', CLIENT_ID=CLIENT_ID, name=login_session['name'])
     else:
+        login_session['state'] = str(uuid.uuid4())
         return render_template('index.html', CLIENT_ID=CLIENT_ID, state=login_session['state'])
 
 
@@ -88,6 +88,7 @@ def clear_credentials():
     print('clearing credentials')
     del login_session['user_id']
     del login_session['name']
+    del login_session['state']
     return
 
 
