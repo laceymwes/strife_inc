@@ -40,7 +40,7 @@ def index():
 
 @strife.route('/tokensignin', methods=['POST'])
 def tokensignin():
-    state = request.form.get('state')
+    state == request.form.get('state')
     if state == login_session['state']:
         token = request.form.get('idtoken')
         try:
