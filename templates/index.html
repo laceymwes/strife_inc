@@ -18,7 +18,7 @@
     <div align='right'>
       <div align='right' class="g-signin2" data-onsuccess="onSignIn"></div>
       <a align='right' href="#" onclick="signOut();">Sign out</a>
-    </div>  
+    </div>
     <h1>Strife Inc.</h1>
     <a href="{{url_for('org_stats')}}">Organizations</a>
   </header>
@@ -35,7 +35,7 @@
           xhr.onload = function() {
               console.log('Signed in as: ' + xhr.responseText);
               };
-          xhr.send('idtoken=' + id_token);
+          xhr.send('idtoken=' + id_token, 'state=' + {{state}});
           }
     </script>
     <script>

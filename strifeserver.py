@@ -31,39 +31,46 @@ CLIENT_ID = json.loads(open('signin_client.json', 'r').read())['web']['client_id
 @strife.route("/")
 def index():
     # if user is logged in, pas user name to template
+    login_session['state'] = str(uuid.uuid4())
     if login_session.get('user_id'):
         return render_template('index.html', CLIENT_ID=CLIENT_ID, name=login_session['name'])
     else:
-        return render_template('index.html', CLIENT_ID=CLIENT_ID)
+        return render_template('index.html', CLIENT_ID=CLIENT_ID, state=login_session['state'])
 
 
 @strife.route('/tokensignin', methods=['POST'])
 def tokensignin():
-    token = request.form.get('idtoken')
-    try:
-        idInfo = id_token.verify_oauth2_token(token, grequests.Request(), CLIENT_ID)
-        userId = idInfo['sub']
-    except ValueError:
-        response = make_response('Invalid token', 401)
+    state = request.form.get('state')
+    if state == login_session['state']:
+        token = request.form.get('idtoken')
+        try:
+            idInfo = id_token.verify_oauth2_token(token, grequests.Request(), CLIENT_ID)
+            userId = idInfo['sub']
+        except ValueError:
+            response = make_response('Invalid token', 401)
+            response.headers['Content-type'] = 'text/html'
+            return response
+        user_request = requests.get('''
+            https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s''' % token)
+        if user_request.status_code == 200:
+            data = user_request.json()
+        else:
+            response = make_response('Invalid token', 401)
+            response.headers['Content-type'] = 'text/html'
+            return response
+        # check if user is admin
+        if checkAuth(data['email']) is True:
+            print(data['email'])
+            createSession(data)
+        else:
+            response = make_response('Unauthorized user', 401)
+            response.headers['Content-typ'] = 'text/html'
+            return response
+        return redirect(url_for('index'))
+    else:
+        response = make_response('Invalid state token..', 401)
         response.headers['Content-type'] = 'text/html'
         return response
-    user_request = requests.get('''
-        https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s''' % token)
-    if user_request.status_code == 200:
-        data = user_request.json()
-    else:
-        response = make_response('Invalid token', 401)
-        response.headers['Content-type'] = 'text/html'
-        return response
-    # check if user is admin
-    if checkAuth(data['email']) is True:
-        print(data['email'])
-        createSession(data)
-    else:
-        response = make_response('Unauthorized user', 401)
-        response.headers['Content-typ'] = 'text/html'
-        return response
-    return redirect(url_for('index'))
 
 
 @strife.route('/tokensignout', methods=['POST'])
